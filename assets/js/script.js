@@ -1,9 +1,8 @@
+const cambios = ["uf","dolar","dolar_intercambio","euro","utm"];
+const listaMonedas = document.querySelector(".moneda");
+const espacioResultado = document.querySelector(".resultado");
 
-const cambios = ["uf","dolar","dolar_intercambio","euro","utm"]
-const listaMonedas = document.querySelector(".moneda")
-const espacioResultado = document.querySelector(".resultado")
-
-const apiURL = "https://mindicador.cl/api"
+const apiURL = "https://mindicador.cl/api";
 
 //obtener opciones y llenar el select
 //traer 4 conversiones 
@@ -29,6 +28,53 @@ async function obtenerMonedas(){
         console.log("Error al obtener la lista de monedas")
     } 
 }
+
+async function actualizarGraficaMoneda(codigo, nombre){
+    const res = await
+    fetch("https://mindicador.cl/api/"+codigo);
+    const dias = await res.json();
+    const labels = dias.serie.slice(0,10).reverse().map((dia) => {
+        const auxFecha = new Date(dia.fecha)
+        const label = `${auxFecha.getFullYear()}-${auxFecha.getMonth()}-${auxFecha.getDate()}`
+        return label
+    });
+    const data = dias.serie.slice(0,10).reverse().map((dia) => {
+        return dia.valor;
+    });
+    const datasets = [
+    {
+        label: nombre+": Historial últimos 10 días",
+        borderColor: "rgb(58, 147, 168)",
+        data
+    }
+    ];
+    return { labels, datasets };
+}
+
+async function renderGrafica(codigo, nombre) {
+    try{
+    const data = await actualizarGraficaMoneda(codigo, nombre);
+        const config = {
+        type: "line",
+        data
+        };
+        debugger
+        let oldChart = Chart.getChart("myChart") 
+        if(oldChart)
+        {
+            oldChart.destroy();
+        }
+        const myChart = document.getElementById("myChart");
+        myChart.style.backgroundColor = "white";
+
+        new Chart(myChart, config);
+    }
+    catch(e){
+        console.log('Error al renderizar gráfica: '+ e)
+    }
+}
+
+
 //calcular el cambio al seleccionar y actualizar el DOM
 //tambien actualizar la gráfica
 //usar try catch
@@ -42,7 +88,7 @@ async function convertir(){
 
         espacioResultado.innerHTML ='$'.concat((Number(pesos.value) / seleccion.moneda[2]).toFixed(2))
 
-        
+        renderGrafica(seleccion.moneda[0], seleccion.moneda[1]);
     }
     catch(e){
         //convertir desde el json miindicador.json
@@ -52,64 +98,3 @@ async function convertir(){
 
 //llamada inicial
 obtenerMonedas()
-//********************************************************* */
-// //fijar varaibles
-// const usuarios = document.querySelector(".usuarios")
-// const apiURL = "https://jsonplaceholder.typicode.com/users"
-
-// //obtener datos
-// async function getUsers(){
-//     const result = await fetch(apiURL)
-//     const data = await result.json()
-//     return data;
-// }
-
-// //llenar html
-// async function renderUsuarios(){
-//     let innerHTML = "";
-//     const dataUsers = await getUsers();
-//     dataUsers.forEach((usuario) => {
-//         innerHTML += `<div class='usuario'>
-//                         <h3>${usuario.name}</h3>
-//                         <h4>${usuario.email}</h4>
-//                         <h4>${usuario.phone}</h4>    
-//                     </div>`
-//     });
-//     usuarios.innerHTML = innerHTML;
-// }
-
-// renderUsuarios();
-
-// async function getRandomUser() {
-//     const res = await fetch("https://randomuser.me/api")
-//     const data = await res.json()
-//     console.log(data)
-//     const element = document.querySelector(".user")
-//     element.innerHTML = data.results[0]["email"]
-// }
-// getRandomUser()
-
-// const climasSection = document.querySelector(".climas")
-// const apiURL = "https://api.gael.cloud/general/public/clima"
-
-// async function getClimas(){
-//     const res = await fetch(apiURL);
-//     const climas = await res.json();
-//     return climas;
-// }
-
-// async function renderClimas(){
-//     const climas = await getClimas();
-//     let template = "";
-    
-//     climas.forEach((clima) => {
-//         template += `<div class='clima'>
-//                         <h3>${clima.Estacion}<h3>
-//                         <p>${clima.Temp}</p>
-//                     </div>`
-//     });
-
-//     climasSection.innerHTML = template;
-// }
-
-// renderClimas();
