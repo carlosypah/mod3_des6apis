@@ -17,28 +17,29 @@
     <link rel="stylesheet" href="./assets/css/style.css" />
   </head>
   <body>
-    <div class="titulo-convertor">Conversor de monedas local</div>
-    <div class="cuerpo-convertor">
-      <h3>Pesos CLP</h3>
-      <input
-        type="text"
-        class="pesos"
-        placeholder="Ingrese cantidad en pesos"
-      />
-      <h5>Moneda a convertir</h5>
-      <select class="moneda" name="moneda" id="moneda"></select>
-      <button
-        type="button"
-        class="buscar"
-        id="buscar"
-        name="buscar"
-        onclick="convertir()"
-      >
-        Buscar
-      </button>
-      <p>Resultado: <strong class="resultado"></strong></p>
+    <div class="main">
+      <div class="titulo-convertor">Conversor de monedas local</div>
+      <div class="cuerpo-convertor">
+        <h3>Pesos CLP</h3>
+        <input
+          type="number"
+          class="pesos"
+          placeholder="Ingrese cantidad en pesos"
+        />
+        <h5>Moneda a convertir</h5>
+        <select class="moneda" name="moneda" id="moneda"></select>
+        <button
+          type="button"
+          class="buscar"
+          id="buscar"
+          name="buscar"
+          onclick="convertir()"
+        >
+          Buscar
+        </button>
+        <p>Resultado: <strong class="resultado"></strong></p>
+      </div>
     </div>
-
     <div class="grafica">
       <canvas id="myChart"></canvas>
     </div>

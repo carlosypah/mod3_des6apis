@@ -1,4 +1,5 @@
 const cambios = ["uf","dolar","dolar_intercambio","euro","utm"];
+const dictEtiquetas = {"uf" : "UF","dolar":"US$","dolar_intercambio":"US$","euro":"€","utm":"UTM"}
 const listaMonedas = document.querySelector(".moneda");
 const espacioResultado = document.querySelector(".resultado");
 
@@ -58,7 +59,6 @@ async function renderGrafica(codigo, nombre) {
         type: "line",
         data
         };
-        debugger
         let oldChart = Chart.getChart("myChart") 
         if(oldChart)
         {
@@ -85,8 +85,10 @@ async function convertir(){
         //recuperar moneda seleccionada
         let seleccion = JSON.parse(listaMonedas.value)
         //TODO:validar si el campo Pesos no está vacío  o no hay selección
-
-        espacioResultado.innerHTML ='$'.concat((Number(pesos.value) / seleccion.moneda[2]).toFixed(2))
+        espacioResultado.innerHTML = dictEtiquetas[seleccion.moneda[0]] + ' ' + new Intl.NumberFormat('en-IN').format(
+            (Number(pesos.value) / seleccion.moneda[2]).toFixed(2),
+          ),
+        // espacioResultado.innerHTML ='$'.concat((Number(pesos.value) / seleccion.moneda[2]).toFixed(2))
 
         renderGrafica(seleccion.moneda[0], seleccion.moneda[1]);
     }
