@@ -10,8 +10,21 @@ const apiURL = "https://mindicador.cl/api";
 //usar try catch
 async function obtenerMonedas(){
     try{
-        const result = await fetch(apiURL);
-        const data = await result.json();
+        let result = await fetch(apiURL);
+        if (!result.ok){
+            //cargar lista desde json miindicador.json
+            result = await fetch('../mindicador.json');
+
+            console.log("Error al obtener la lista de monedas")
+            let innerAlerta = `<img src='../assets/img/no-wifi.png' alt='no-signal' />
+                                <span class='alerta'> 
+                                https://mindicador.cl/api no está disponible, no hay datos para el gráfico <br><br>
+                                Las conversiones se realizan con la información local de mindicador.json </span>`
+            let chart = document.getElementsByClassName('grafica')[0]
+            chart.innerHTML = innerAlerta
+        }
+
+        data = await result.json();
         var mon = [];
         cambios.forEach((element) => {
             mon.push(data[element])
@@ -22,14 +35,17 @@ async function obtenerMonedas(){
             innerHTML += `<option value='{"moneda":["${element.codigo}","${element.nombre}",${element.valor}]}'>${element.nombre}</option>`            
         });
         listaMonedas.innerHTML = innerHTML;
-        
+
+    }catch (e){
+        console.log("Error irremediable al obtener la lista de monedas")
+        let innerAlerta = `<span class='alerta'> Error irremediable al cargar la lista de monedas: ${e}</span>`
+        let chart = document.getElementsByClassName('grafica')[0]
+        chart.innerHTML = innerAlerta
     }
-    catch(e){
-        //cargar lista desde json miindicador.json
-        console.log("Error al obtener la lista de monedas")
-    } 
 }
 
+//pinto el grafico
+//al grafico lo mato si ya existe
 async function actualizarGraficaMoneda(codigo, nombre){
     const res = await
     fetch("https://mindicador.cl/api/"+codigo);
@@ -74,7 +90,6 @@ async function renderGrafica(codigo, nombre) {
     }
 }
 
-
 //calcular el cambio al seleccionar y actualizar el DOM
 //tambien actualizar la gráfica
 //usar try catch
@@ -85,12 +100,20 @@ async function convertir(){
         //recuperar moneda seleccionada
         let seleccion = JSON.parse(listaMonedas.value)
         //TODO:validar si el campo Pesos no está vacío  o no hay selección
-        espacioResultado.innerHTML = dictEtiquetas[seleccion.moneda[0]] + ' ' + new Intl.NumberFormat('en-IN').format(
-            (Number(pesos.value) / seleccion.moneda[2]).toFixed(2),
-          ),
-        // espacioResultado.innerHTML ='$'.concat((Number(pesos.value) / seleccion.moneda[2]).toFixed(2))
+        if(pesos.value === '' || Number(pesos.value) < 1){
+            alert('El valor ingresado no es un número válido')
+            return
+        }
 
-        renderGrafica(seleccion.moneda[0], seleccion.moneda[1]);
+        espacioResultado.innerHTML = dictEtiquetas[seleccion.moneda[0]] + ' ' + new Intl.NumberFormat('en-IN').format(
+            (Number(pesos.value) / seleccion.moneda[2]).toFixed(2),)
+
+        //Si estoy mostrando el div de error, no cargo el gráfico ni en pedo
+        let errorDeAPI = document.getElementsByClassName('alerta');
+        if(errorDeAPI.length == 0){
+            renderGrafica(seleccion.moneda[0], seleccion.moneda[1]);
+        }
+
     }
     catch(e){
         //convertir desde el json miindicador.json
