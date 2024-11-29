@@ -19,15 +19,25 @@
     <div class="titulo-convertor">Conversor de monedas local</div>
     <div class="cuerpo-convertor">
       <h3>Pesos CLP</h3>
-      <input type="text" />
+      <input
+        type="text"
+        class="pesos"
+        placeholder="Ingrese cantidad en pesos"
+      />
       <h5>Moneda a convertir</h5>
-      <select name="moneda" id="moneda">
-        <option value="dolar">Dolar</option>
-      </select>
-      <button type="button" class="" id="buscar" name="buscar">Buscar</button>
-      <p class="resultado">Resultado: $31.27</p>
+      <select class="moneda" name="moneda" id="moneda"></select>
+      <button
+        type="button"
+        class="buscar"
+        id="buscar"
+        name="buscar"
+        onclick="convertir()"
+      >
+        Buscar
+      </button>
+      <p>Resultado: <strong class="resultado"></strong></p>
     </div>
 
-    <!-- <script src="./assets/js/script.js"></script> -->
+    <script src="./assets/js/script.js"></script>
   </body>
 </html>
